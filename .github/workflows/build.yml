@@ -1,0 +1,102 @@
+name: 🏗️ Build Fortnite RAM Spoofer APK
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: 'Build type'
+        required: true
+        default: 'release'
+        type: choice
+        options:
+        - release
+        - debug
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v4
+      
+    - name: ☕ Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        
+    - name: 📦 Cache Gradle packages
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
+    - name: 🔐 Grant execute permission for gradlew
+      run: chmod +x gradlew
+      
+    - name: 📋 Display project info
+      run: |
+        echo "Java version:"
+        java -version
+        echo "Gradle version:"
+        ./gradlew --version
+        echo "Project structure:"
+        ls -la
+        
+    - name: 🏗️ Build Debug APK
+      if: github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == ''
+      run: ./gradlew assembleDebug
+      
+    - name: 🏗️ Build Release APK
+      if: github.event.inputs.build_type == 'release'
+      run: ./gradlew assembleRelease
+      
+    - name: 📱 Upload Debug APK
+      if: github.event.inputs.build_type == 'debug' || github.event.inputs.build_type == ''
+      uses: actions/upload-artifact@v4
+      with:
+        name: FortniteSpoofer-Debug-APK
+        path: app/build/outputs/apk/debug/app-debug.apk
+        retention-days: 30
+        
+    - name: 📱 Upload Release APK
+      if: github.event.inputs.build_type == 'release'
+      uses: actions/upload-artifact@v4
+      with:
+        name: FortniteSpoofer-Release-APK
+        path: app/build/outputs/apk/release/app-release.apk
+        retention-days: 90
+        
+    - name: 📊 Build Summary
+      run: |
+        echo "## 🎯 Build Summary" >> $GITHUB_STEP_SUMMARY
+        echo "| File | Size | Type |" >> $GITHUB_STEP_SUMMARY
+        echo "|------|------|------|" >> $GITHUB_STEP_SUMMARY
+        
+        if [ -f "app/build/outputs/apk/debug/app-debug.apk" ]; then
+          DEBUG_SIZE=$(ls -lh app/build/outputs/apk/debug/app-debug.apk | awk '{print $5}')
+          echo "| Debug APK | $DEBUG_SIZE | Debug |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        if [ -f "app/build/outputs/apk/release/app-release.apk" ]; then
+          RELEASE_SIZE=$(ls -lh app/build/outputs/apk/release/app-release.apk | awk '{print $5}')
+          echo "| Release APK | $RELEASE_SIZE | Release |" >> $GITHUB_STEP_SUMMARY
+        fi
+        
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### 📱 Installation Instructions" >> $GITHUB_STEP_SUMMARY
+        echo "1. Download the APK from the Artifacts section below" >> $GITHUB_STEP_SUMMARY
+        echo "2. Enable 'Install from unknown sources' on your device" >> $GITHUB_STEP_SUMMARY
+        echo "3. Install the APK" >> $GITHUB_STEP_SUMMARY
+        echo "4. Enable in LSPosed/Xposed" >> $GITHUB_STEP_SUMMARY
+        echo "5. Select Fortnite from the list" >> $GITHUB_STEP_SUMMARY
+        echo "6. Reboot your device" >> $GITHUB_STEP_SUMMARY
