@@ -13,10 +13,6 @@ import java.lang.reflect.Field;
 
 public class RAMSpoofModule implements IXposedHookLoadPackage {
 
-    // التطبيقات المستهدفة
-    private static final String TARGET_PKG = "com.epicgames.fortnite";
-    private static final String TARGET_PKG_ALT = "kbi.ntjgzgmei.mkqmbnhc";
-
     // قيم الذاكرة المزيفة - 8GB
     private static final long NEW_TOTAL_RAM_BYTES = 8L * 1024L * 1024L * 1024L;
     private static final long NEW_AVAIL_RAM_BYTES = 6L * 1024L * 1024L * 1024L;
@@ -26,16 +22,12 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
     private static final String FAKE_MODEL = "Samsung Galaxy S10";
     private static final String FAKE_MANUFACTURER = "Samsung";
     private static final String FAKE_HARDWARE = "exynos9820";
-    private static final String FAKE_GPU = "Mali-G76 MP12";
+    private static final String FAKE_GPU = "Adreno 660";
 
     @Override
     public void handleLoadPackage(final XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        // التحقق من الحزمة المستهدفة
-        if (!lpparam.packageName.equals(TARGET_PKG) && 
-            !lpparam.packageName.equals(TARGET_PKG_ALT)) {
-            return;
-        }
-
+        // إزالة التحقق من الحزمة المستهدفة - سيتم التفعيل على جميع التطبيقات
+        
         XposedBridge.log("RAMSpoof: Hooking " + lpparam.packageName);
 
         // Hook 1: ActivityManager.getMemoryInfo
@@ -71,7 +63,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
                         memInfo.availMem = NEW_AVAIL_RAM_BYTES;
                         memInfo.threshold = NEW_TOTAL_RAM_BYTES / 10;
                         memInfo.lowMemory = false;
-                        XposedBridge.log("RAMSpoof: Spoofed MemoryInfo to 8GB");
+                        XposedBridge.log("RAMSpoof: Spoofed MemoryInfo to 8GB for " + lpparam.packageName);
                     }
                 }
             );
@@ -115,7 +107,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
                 }
             );
             
-            XposedBridge.log("RAMSpoof: Spoofed Runtime memory methods");
+            XposedBridge.log("RAMSpoof: Spoofed Runtime memory methods for " + lpparam.packageName);
         } catch (Throwable t) {
             XposedBridge.log("RAMSpoof: Failed to hook Runtime - " + t.getMessage());
         }
@@ -155,7 +147,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
             XposedHelpers.setStaticObjectField(Build.class, "HARDWARE", FAKE_HARDWARE);
             XposedHelpers.setStaticObjectField(Build.class, "BOARD", FAKE_HARDWARE);
             
-            XposedBridge.log("RAMSpoof: Spoofed Build properties");
+            XposedBridge.log("RAMSpoof: Spoofed Build properties for " + lpparam.packageName);
         } catch (Throwable t) {
             XposedBridge.log("RAMSpoof: Failed to hook Build - " + t.getMessage());
         }
@@ -192,7 +184,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
                 }
             );
 
-            XposedBridge.log("RAMSpoof: Spoofed SystemProperties");
+            XposedBridge.log("RAMSpoof: Spoofed SystemProperties for " + lpparam.packageName);
         } catch (Throwable t) {
             XposedBridge.log("RAMSpoof: Failed to hook SystemProperties - " + t.getMessage());
         }
@@ -233,7 +225,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
                         int name = (int) param.args[0];
                         if (name == 0x1F01) { // GL_RENDERER
                             param.setResult(FAKE_GPU);
-                            XposedBridge.log("RAMSpoof: Spoofed GPU to " + FAKE_GPU);
+                            XposedBridge.log("RAMSpoof: Spoofed GPU to " + FAKE_GPU + " for " + lpparam.packageName);
                         }
                     }
                 }
