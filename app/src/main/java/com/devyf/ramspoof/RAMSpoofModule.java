@@ -35,7 +35,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
         // \u0627\u0644\u062a\u062d\u0642\u0642 \u0645\u0646 \u0627\u0644\u062d\u0632\u0645\u0629 \u0627\u0644\u0645\u0633\u062a\u0647\u062f\u0641\u0629 \u0641\u0642\u0637 - Fortnite
         if (!lpparam.packageName.equals("com.epicgames.fortnite") && 
             !lpparam.packageName.equals("kbi.ntjgzgmei.mkqmbnhc") &&
-            !lpparam.packageName.equals("ru.andr7e.deviceinfohw")) {
+            !lpparam.packageName.equals("com.epicgames.portal")) {
             return; // \u0644\u0627 \u062a\u0639\u0645\u0644 \u0639\u0644\u0649 \u0623\u064a \u062a\u0637\u0628\u064a\u0642 \u0622\u062e\u0631
         }
 
