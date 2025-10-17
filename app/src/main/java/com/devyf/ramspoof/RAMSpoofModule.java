@@ -16,9 +16,9 @@ import java.lang.reflect.Method;
 
 public class RAMSpoofModule implements IXposedHookLoadPackage {
 
-    // \u0642\u064a\u0645 \u0627\u0644\u0630\u0627\u0643\u0631\u0629 \u0627\u0644\u0645\u0632\u064a\u0641\u0629 - 8GB
-    private static final long NEW_TOTAL_RAM_BYTES = 8L * 1024L * 1024L * 1024L;
-    private static final long NEW_AVAIL_RAM_BYTES = 6L * 1024L * 1024L * 1024L;
+    // \u0642\u064a\u0645 \u0627\u0644\u0630\u0627\u0643\u0631\u0629 \u0627\u0644\u0645\u0632\u064a\u0641\u0629 - محسّنة للأجهزة 2GB (تزييف 4GB)
+    private static final long NEW_TOTAL_RAM_BYTES = 4L * 1024L * 1024L * 1024L;
+    private static final long NEW_AVAIL_RAM_BYTES = 3L * 1024L * 1024L * 1024L;
     
     // \u0645\u0639\u0644\u0648\u0645\u0627\u062a \u062c\u0647\u0627\u0632 Samsung Galaxy S10 \u062d\u0642\u064a\u0642\u064a\u0629
     private static final String FAKE_DEVICE = "beyond1";
@@ -194,10 +194,13 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
             case "ro.board":
                 return FAKE_BOARD;
             case "dalvik.vm.heapsize":
+                return "384m";
             case "dalvik.vm.heapstartsize":
-                return "512m";
+                return "8m";
             case "dalvik.vm.heapgrowthlimit":
-                return "256m";
+                return "192m";  // محسّن للأجهزة 2GB
+            case "dalvik.vm.heaptargetutilization":
+                return "0.75";
             case "ro.config.low_ram":
                 return "false";
             case "ro.lmk.low":
@@ -338,7 +341,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        param.setResult(512); // 512MB heap size
+                        param.setResult(384); // محسّن لـ 2GB - 384MB heap size
                     }
                 }
             );
@@ -350,7 +353,7 @@ public class RAMSpoofModule implements IXposedHookLoadPackage {
                 new XC_MethodHook() {
                     @Override
                     protected void afterHookedMethod(MethodHookParam param) throws Throwable {
-                        param.setResult(768); // 768MB large heap
+                        param.setResult(512); // محسّن لـ 2GB - 512MB large heap
                     }
                 }
             );
