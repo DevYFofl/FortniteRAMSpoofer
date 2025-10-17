@@ -1,26 +1,27 @@
-# 🎮 Fortnite RAM Spoofer
+# 🎮 Fortnite RAM Spoofer - Optimized for 2GB Devices
 
 Simple Xposed + Magisk modules to spoof device info and run Fortnite on 2GB RAM devices.
 
 ## ⚠️ Important Note
 
-This is a **SIMPLE SPOOFER ONLY** - no performance tweaks, no Zram, no Swap.
-Just device info spoofing to bypass Fortnite's RAM check.
+This is **OPTIMIZED FOR 2GB RAM DEVICES** - spoofs to 4GB (instead of 8GB) for better performance and stability on low-end devices. Efficiently bypasses Fortnite's 3GB RAM check.
 
 ---
 
 ## 📦 What's Included
 
-### 1. Xposed Module
-- Spoofs RAM to 8GB
+### 1. Xposed Module (Optimized)
+- Spoofs RAM to 4GB (optimized for 2GB devices)
 - Spoofs device model to Samsung Galaxy S10
 - Spoofs hardware info
 - Spoofs GPU info
+- Optimized heap memory settings
 
-### 2. Magisk Module
+### 2. Magisk Module (Optimized)
 - Changes system properties
 - Spoofs device model
 - Spoofs hardware info
+- Optimized heap sizes for 2GB devices (384MB/192MB)
 - **NO performance tweaks**
 - **NO Zram/Swap**
 
@@ -133,17 +134,20 @@ Just device info spoofing to bypass Fortnite's RAM check.
 ## 📝 What This Does
 
 ### Xposed Module Hooks:
-1. `ActivityManager.getMemoryInfo` - Spoofs total/available RAM
+1. `ActivityManager.getMemoryInfo` - Spoofs total/available RAM to 4GB/3GB (optimized)
 2. `Runtime.totalMemory/maxMemory/freeMemory` - Spoofs runtime memory
 3. `/proc/meminfo` reading - Spoofs memory info file
 4. `Build` properties - Spoofs device model/manufacturer
 5. `SystemProperties` - Spoofs system properties
 6. GPU info - Spoofs GPU renderer
+7. Memory class - Returns 384MB/512MB (optimized for 2GB)
 
 ### Magisk Module Changes:
 - Device model → Samsung Galaxy S10
 - Hardware → Exynos 9820
-- Heap size → 512m
+- Heap size → 384m (optimized for 2GB RAM)
+- Heap start → 8m
+- Heap growth limit → 192m
 - OpenGL version
 
 ### What This Does NOT Do:
@@ -158,7 +162,7 @@ Just device info spoofing to bypass Fortnite's RAM check.
 
 ## 🎯 Philosophy
 
-**Keep it simple!** This module only spoofs device information to bypass Fortnite's RAM check. No complex performance tweaks that might cause instability.
+**Keep it simple and optimized!** This module spoofs device information to bypass Fortnite's 3GB RAM check, while keeping memory values realistic (4GB instead of 8GB) for better performance on actual 2GB devices. No complex performance tweaks that might cause instability.
 
 ---
 
